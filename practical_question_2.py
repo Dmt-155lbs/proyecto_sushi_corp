@@ -37,9 +37,9 @@ import urllib.request, zipfile, io, os
 np.random.seed(42)
 plt.rcParams['figure.dpi'] = 150
 
-# ============================================================
-# 1. CARGA DE DATOS
-# ============================================================
+
+# 1. ------------CARGA DE DATOS-------------
+
 print("=" * 60)
 print("1. CARGA DE DATOS")
 print("=" * 60)
@@ -69,9 +69,9 @@ print(f"Columnas: {list(df.columns)}")
 # Target encoding
 df['target'] = (df['y'] == 'yes').astype(int)
 
-# ============================================================
-# 2. EDA
-# ============================================================
+
+# 2. ------------EDA-------------
+
 print("\n" + "=" * 60)
 print("2. ANÁLISIS EXPLORATORIO DE DATOS (EDA)")
 print("=" * 60)
@@ -164,9 +164,9 @@ plt.tight_layout()
 plt.savefig('corr_bank_marketing.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-# ============================================================
-# 3. PIPELINE DE PREPROCESAMIENTO
-# ============================================================
+
+# 3. ------------PIPELINE DE PREPROCESAMIENTO-------------
+
 print("\n" + "=" * 60)
 print("3. PIPELINE DE PREPROCESAMIENTO")
 print("=" * 60)
@@ -224,9 +224,9 @@ all_feature_names = num_features + cat_feature_names
 print(f"\nTrain: {X_train_proc.shape}, Test: {X_test_proc.shape}")
 print(f"Total features procesadas: {X_train_proc.shape[1]}")
 
-# ============================================================
-# 4. COMPARACIÓN DE MODELOS (STRATIFIED CV)
-# ============================================================
+
+# 4. ------------COMPARACIÓN DE MODELOS (STRATIFIED CV)-------------
+
 print("\n" + "=" * 60)
 print("4. COMPARACIÓN DE MODELOS (5-Fold Stratified CV)")
 print("=" * 60)
@@ -279,9 +279,9 @@ lr_grid = GridSearchCV(LogisticRegression(penalty='l2', max_iter=5000,
 lr_grid.fit(X_train_proc, y_train)
 print(f"Ridge best C: {lr_grid.best_params_}, AUC: {lr_grid.best_score_:.4f}")
 
-# ============================================================
-# 5. EVALUACIÓN FINAL EN TEST SET
-# ============================================================
+
+# 5. ------------EVALUACIÓN FINAL EN TEST SET-------------
+
 print("\n" + "=" * 60)
 print("5. EVALUACIÓN FINAL EN TEST SET")
 print("=" * 60)
@@ -395,9 +395,9 @@ plt.tight_layout()
 plt.savefig('confusion_thresholds_bank.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-# ============================================================
-# 6. FEATURE IMPORTANCE / COEFICIENTES
-# ============================================================
+
+# 6. ------------FEATURE IMPORTANCE / COEFICIENTES-------------
+
 print("\n" + "=" * 60)
 print("6. FEATURE IMPORTANCE / COEFICIENTES")
 print("=" * 60)
@@ -437,9 +437,9 @@ print("  - contact_telephone: canal de contacto asociado con menor conversión."
 print("  - month: ciertos meses muestran estacionalidad en suscripciones.")
 print("\n  ⚠ NO se puede afirmar que llamar más veces 'causa' suscripción.")
 
-# ============================================================
-# 7. ESTRATEGIA DE CONTACTO
-# ============================================================
+
+# 7. ------------ESTRATEGIA DE CONTACTO-------------
+
 print("\n" + "=" * 60)
 print("7. RECOMENDACIÓN DE ESTRATEGIA DE CONTACTO")
 print("=" * 60)
@@ -483,9 +483,9 @@ plt.tight_layout()
 plt.savefig('lift_curve_bank.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-# ============================================================
-# 8. EJEMPLOS DE PREDICCIÓN
-# ============================================================
+
+# 8. ------------EJEMPLOS DE PREDICCIÓN-------------
+
 print("\n" + "=" * 60)
 print("8. EJEMPLOS DE PREDICCIÓN")
 print("=" * 60)

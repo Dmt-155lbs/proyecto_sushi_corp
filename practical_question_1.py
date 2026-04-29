@@ -32,9 +32,8 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score,
 np.random.seed(42)
 plt.rcParams['figure.dpi'] = 150
 
-# ============================================================
-# 1. CARGA DE DATOS
-# ============================================================
+# 1. ------------CARGA DE DATOS-------------
+
 print("=" * 60)
 print("1. CARGA DE DATOS")
 print("=" * 60)
@@ -62,9 +61,9 @@ print(f"\nColumnas: {list(df.columns)}")
 print(f"\nValores nulos:\n{df.isnull().sum()}")
 print(f"\nEstadísticas descriptivas:\n{df.describe().round(3)}")
 
-# ============================================================
-# 2. DECISIÓN DE MODELADO
-# ============================================================
+
+# 2. ------------DECISIÓN DE MODELADO-------------
+
 print("\n" + "=" * 60)
 print("2. DECISIÓN DE MODELADO")
 print("=" * 60)
@@ -83,9 +82,9 @@ print("  - Regresion: asume intervalos iguales entre calidades (5->6 = 7->8), no
 print("  - Multiclase: clases extremas (3,4,9) tienen muy pocas muestras")
 print("  - Binaria: decision practica para vinicultores (premium vs estandar)")
 
-# ============================================================
-# 3. EDA
-# ============================================================
+
+# 3. ------------EDA-------------
+
 print("\n" + "=" * 60)
 print("3. ANÁLISIS EXPLORATORIO DE DATOS (EDA)")
 print("=" * 60)
@@ -146,9 +145,9 @@ for var in key_vars:
     print(f"\n--- {var} ---")
     print(df.groupby('target')[var].describe().round(3))
 
-# ============================================================
-# 4. PREPROCESAMIENTO
-# ============================================================
+
+# 4. ------PREPROCESAMIENTO-------
+
 print("\n" + "=" * 60)
 print("4. PREPROCESAMIENTO")
 print("=" * 60)
@@ -168,9 +167,9 @@ print(f"Train: {X_train_sc.shape[0]} muestras, Test: {X_test_sc.shape[0]} muestr
 print(f"Train target: {y_train.value_counts().to_dict()}")
 print(f"Test target:  {y_test.value_counts().to_dict()}")
 
-# ============================================================
-# 5. COMPARACIÓN DE MODELOS CON K-FOLD CV
-# ============================================================
+
+# 5. ------------COMPARACIÓN DE MODELOS CON K-FOLD CV-------------
+
 print("\n" + "=" * 60)
 print("5. COMPARACIÓN DE MODELOS (5-Fold Stratified CV)")
 print("=" * 60)
@@ -225,9 +224,9 @@ lr_grid = GridSearchCV(LogisticRegression(penalty='l2', max_iter=5000,
 lr_grid.fit(X_train_sc, y_train)
 print(f"Ridge mejor C: {lr_grid.best_params_}, F1: {lr_grid.best_score_:.4f}")
 
-# ============================================================
-# 6. ESTABILIDAD LASSO vs ELASTIC NET
-# ============================================================
+
+# 6. -------ESTABILIDAD LASSO vs ELASTIC NET-------
+
 print("\n" + "=" * 60)
 print("6. ESTABILIDAD DE PREDICTORES: LASSO vs ELASTIC NET")
 print("=" * 60)
@@ -284,9 +283,9 @@ print("\n→ Elastic Net muestra coeficientes más estables (menor varianza)")
 print("  porque la penalización L2 agrupa variables correlacionadas")
 print("  en lugar de seleccionar arbitrariamente una de ellas.")
 
-# ============================================================
-# 7. EVALUACIÓN FINAL EN TEST SET
-# ============================================================
+
+# 7. -------EVALUACIÓN FINAL EN TEST SET-------
+
 print("\n" + "=" * 60)
 print("7. EVALUACIÓN FINAL EN TEST SET")
 print("=" * 60)
@@ -353,9 +352,9 @@ plt.tight_layout()
 plt.savefig('confusion_matrices_wine.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-# ============================================================
-# 8. INTERPRETACIÓN E INFERENCIA
-# ============================================================
+
+# 8. ------------INTERPRETACIÓN E INFERENCIA-------------
+
 print("\n" + "=" * 60)
 print("8. INTERPRETACIÓN E INFERENCIA")
 print("=" * 60)
@@ -394,9 +393,9 @@ print("  - Los SULPHATES contribuyen positivamente a la calidad.")
 print("  - El pH tiene un efecto menos pronunciado pero relevante.")
 print("\nNota: Estas son asociaciones, NO relaciones causales.")
 
-# ============================================================
-# 9. EJEMPLOS DE PREDICCIÓN
-# ============================================================
+
+# 9. ------------EJEMPLOS DE PREDICCIÓN-------------
+
 print("\n" + "=" * 60)
 print("9. EJEMPLOS DE PREDICCIÓN")
 print("=" * 60)

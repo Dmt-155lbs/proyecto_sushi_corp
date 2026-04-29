@@ -1,0 +1,6 @@
+Real,Predicción,P(Premium),Correcto
+Premium,Premium,0.73,Sí
+Estándar,Estándar,0.14,Sí
+Estándar,Estándar,0.015,Sí
+Estándar,Estándar,0.085,Sí
+Premium,Premium,0.64,Sí

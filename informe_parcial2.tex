@@ -155,7 +155,26 @@ El modelo final se evalúa en el set de prueba aislado. Las métricas reportadas
 
 \subsection{Ejemplos de Predicción}
 
-Se presentan 5 predicciones aleatorias del set de prueba con el modelo seleccionado, mostrando la clase real, la predicción y la probabilidad estimada $P(\text{Premium})$, demostrando la capacidad operativa del modelo para asistir decisiones de clasificación de vinos.
+Se presentan 5 predicciones del set de prueba con el modelo seleccionado (Random Forest tuneado), mostrando la clase real, la predicción y la probabilidad estimada $P(\text{Premium})$. Se realizó un muestreo estratificado para incluir ejemplos de ambas clases.
+
+\begin{table}[H]
+\centering
+\caption{Ejemplos de predicción - Wine Quality (Random Forest)}
+\label{tab:pred_wine}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{\#} & \textbf{Real} & \textbf{Predicción} & \textbf{$P(\text{Premium})$} & \textbf{Correcto} \\
+\midrule
+1 & Premium  & Premium  & 0.7300 & Sí \\
+2 & Estándar & Estándar & 0.1400 & Sí \\
+3 & Estándar & Estándar & 0.0150 & Sí \\
+4 & Estándar & Estándar & 0.0850 & Sí \\
+5 & Premium  & Premium  & 0.6400 & Sí \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El modelo clasifica correctamente los 5 ejemplos mostrados, con probabilidades claramente diferenciadas: los vinos premium obtienen $P > 0.6$ mientras que los estándar se mantienen por debajo de $0.15$, lo que demuestra una buena separación de clases en el score predictivo.
 
 % ================================================================
 % PRACTICAL QUESTION 2
@@ -292,6 +311,29 @@ Bajo capacidad limitada de call center:
     \caption{Curva de captura (Lift) del modelo seleccionado}
     \label{fig:lift}
 \end{figure}
+
+\subsection{Ejemplos de Predicción}
+
+Se presentan 5 predicciones del set de prueba con el modelo seleccionado (Random Forest tuneado), con muestreo estratificado para incluir ejemplos de ambas clases.
+
+\begin{table}[H]
+\centering
+\caption{Ejemplos de predicción - Bank Marketing (Random Forest)}
+\label{tab:pred_bank}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{\#} & \textbf{Real} & \textbf{Predicción} & \textbf{$P(\text{Suscripción})$} & \textbf{Correcto} \\
+\midrule
+1 & No & No & 0.2039 & Sí \\
+2 & No & No & 0.0538 & Sí \\
+3 & Sí & No & 0.0615 & No \\
+4 & Sí & Sí & 0.5287 & Sí \\
+5 & No & No & 0.0445 & Sí \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El ejemplo \#3 ilustra un falso negativo: un cliente que sí suscribió pero recibió una probabilidad baja (0.0615), probablemente porque su perfil no coincidía con los patrones típicos de conversión. El ejemplo \#4 muestra una predicción correcta de suscripción con $P = 0.5287$, superando el umbral de decisión. Estos ejemplos reflejan las dificultades inherentes del dataset con $\sim$11\% de tasa base positiva.
 
 % ================================================================
 % REFERENCIAS
