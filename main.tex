@@ -1,0 +1,290 @@
+
+\documentclass[11pt,spanish]{article}
+\usepackage{graphicx}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\geometry{verbose,tmargin=2.5 cm,bmargin=2.5 cm,lmargin=3.5cm,rmargin=3.5cm}
+\usepackage{array}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{url}
+\captionsetup[table]{name = Tabla}
+\providecommand{\abs}[1]{\lvert#1\rvert}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+
+\makeatletter
+\providecommand{\tabularnewline}{\\}
+
+\def\abstractname{Resumen}
+\def\refname{Referencias}
+\def\figurename{\textbf{Figura}}
+\def\tablename{\textbf{Tabla}}
+
+\makeatother
+
+\usepackage{babel}
+\addto\shorthandsspanish{\spanishdeactivate{~<>}}
+
+\begin{document}
+
+\title{\textbf{Regression and Classification with Free Public Data Sets}}
+
+
+\author{Daniel Martínez (00329519) \\\\ NRC 3468}
+
+\maketitle
+\section{Practical Question 1 - Linear Regression}
+
+\subsection{Análisis Exploratorio de Datos (EDA)}
+
+Relación MPG vs Peso: El gráfico de dispersión evidencia una fuerte relación negativa entre el peso del vehículo y su rendimiento. A medida que el peso aumenta, las millas por galón disminuyen. Además, la tendencia muestra una ligera curvatura (no es perfectamente recta), lo que sugiere que un término polinomial (como el peso al cuadrado) podría mejorar el ajuste en modelos posteriores.
+
+
+Variables Categóricas: 
+
+\begin{itemize}
+    \item Origen: El boxplot muestra claras diferencias de eficiencia según la región. Los vehículos japoneses presentan la mediana más alta de mpg, seguidos por los europeos, mientras que los estadounidenses son los menos eficientes.
+\end{itemize}
+
+
+\begin{itemize}
+    \item Cilindros: Se observa que la relación no es estrictamente lineal. Por ejemplo, los motores de 4 cilindros tienen un rendimiento superior a los de 3 cilindros, y a partir de los 4 cilindros, el rendimiento decae significativamente hacia los modelos de 6 y 8 cilindros.
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.35]{EDA_1.png}
+    \caption{Varios gráficos de EDA}
+    \label{figura1}
+\end{figure}
+
+\subsection{Estrategia de Preprocesamiento}
+
+Tratamiento de cylinders: Basado en el comportamiento no lineal observado en el EDA, se tratará la variable cylinders de dos formas:
+\begin{itemize}
+    \item Como variable numérica: Para el modelo de regresión lineal base, asumiendo una pendiente constante por cilindro.
+\end{itemize}
+
+\begin{itemize}
+    \item Como variable categórica (One-Hot Encoding): Para los modelos competitivos, permitiendo capturar el efecto específico de cada tipo de motor ("salto" de eficiencia de 3 a 4 cilindros) sin forzar una relación lineal. La variable origin también recibe el mismo tratamiento.
+\end{itemize}
+
+Es indispensable aplicar estandarización (usando StandardScaler) a todas las variables numéricas continuas. Esto es crucial para el modelo regularizado (Lasso) que se ajustará más adelante, ya que los métodos de penalización son altamente sensibles a la escala de las variables.\\\\
+Para evitar el sobreajuste y garantizar una evaluación honesta, se separa el conjunto de datos en entrenamiento (80\%) y prueba (20\%), manteniendo el conjunto de prueba completamente aislado durante la fase de ajuste y selección de modelos.
+
+\subsection{Ajuste y Comparación de Modelos}
+
+Se ajustaron y compararon tres modelos predictivos distintos:
+\begin{itemize}
+    \item Modelo 1 (Línea Base): Una regresión lineal múltiple estándar utilizando todas las características, incluyendo la codificación one-hot para cilindros y origen.
+\end{itemize}
+\begin{itemize}
+    \item Modelo 2: Una regresión que incorpora un término polinomial (peso al cuadrado) para capturar la curvatura observada durante el Análisis Exploratorio de Datos (EDA).
+\end{itemize}
+\begin{itemize}
+    \item Modelo 3 (Regularización Lasso): Un modelo con penalización L1 optimizado mediante validación cruzada (LassoCV).
+\end{itemize}
+\textbf{Resultados de Evaluación (RMSE en el conjunto de prueba):}
+\begin{itemize}
+    \item Modelo 1 (Base): 2.92
+\end{itemize}
+\begin{itemize}
+    \item Modelo 2: 2.81
+\end{itemize}
+\begin{itemize}
+    \item Modelo 3 (Lasso CV): 3.03
+\end{itemize}
+Recomendación de Modelo: Se recomienda el Modelo 2, ya que presenta el menor error predictivo (RMSE) en el conjunto de prueba aislado. La utilización del término polinomial cuadrático para el peso fue exitosa para capturar la no linealidad, mejorando la capacidad de predicción frente al modelo lineal estricto y al modelo regularizado.
+
+\subsection{Interpretación del Efecto del Peso (Weight)}
+
+En el modelo recomendado (que incluye $weight$ y $weight^2$), el efecto marginal del peso sobre el consumo de combustible ya no es constante. Para interpretar su efecto exacto en un punto dado, se debe evaluar la derivada parcial de la ecuación de regresión con respecto al peso.\\
+
+Este efecto debe interpretarse de manera netamente asociacional. Dado que los datos provienen de un estudio observacional (y no de un experimento aleatorizado), no se puede afirmar que aumentar el peso de un auto "causará" directamente la caída en millas por galón observada, ya que pueden existir variables de confusión (como la aerodinámica o el tamaño del chasis) que afecten a ambos simultáneamente.
+
+\subsection{Evaluación de Supuestos y Consecuencias de sus Violaciones}
+
+El diagnóstico del modelo lineal (Modelo 1) reveló violaciones significativas a varios supuestos de Gauss-Markov:
+
+\begin{itemize}
+    \item Linealidad: El gráfico de "Residuals vs Fitted" no muestra una dispersión aleatoria alrededor de cero. Se observa un patrón claro en forma de "U" o curva, lo que indica que la relación lineal asumida es incorrecta. Esta fue precisamente la razón por la que el Modelo 2 (polinomial) tuvo un mejor rendimiento.
+\end{itemize}
+
+\begin{itemize}
+    \item Varianza Constante (Homocedasticidad): El test de Breusch-Pagan arrojó un p-valor de $0.0001$ (mucho menor a $\alpha = 0.05$), confirmando fuertemente la presencia de heterocedasticidad. Además, en el gráfico de residuos, la varianza parece aumentar ("forma de embudo") en ciertos rangos de predicción.
+\end{itemize}
+
+\begin{itemize}
+    \item Normalidad: El gráfico Q-Q muestra que los extremos (las colas) se desvían de la línea recta diagonal, lo que indica que los residuos no siguen una distribución normal perfecta.
+\end{itemize}
+
+\begin{itemize}
+    \item Multicolinealidad: El cálculo del Factor de Inflación de la Varianza (VIF) reveló valores críticos ($VIF > 10$) para varias variables, destacando $cylinders_8$ (36.99), $cylinders_4$ (29.79), $displacement (22.86)$, weight (11.18) y horsepower (10.66). Esto indica que estas variables están fuertemente correlacionadas entre sí.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{residuals.png}
+    \caption{Evaluación de Supuestos}
+    \label{figura1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{valores_VIF.png}
+    \caption{Valores VIF}
+    \label{figura1}
+\end{figure}
+
+
+\textbf{Consecuencias de las violaciones:}
+
+\begin{itemize}
+    \item Predicción sesgada: La violación del supuesto de linealidad (subajuste) provoca sesgo sistemático en las predicciones en ciertos rangos de datos.
+\end{itemize}
+
+\begin{itemize}
+    \item Inferencia inválida: La presencia de heterocedasticidad y no normalidad significa que los errores estándar de los coeficientes ($\hat{\beta}$) están mal estimados. En consecuencia, los intervalos de confianza y las pruebas de hipótesis (p-valores) para determinar la significancia de las variables no son fiables.
+\end{itemize}
+
+\begin{itemize}
+    \item Inestabilidad: La alta multicolinealidad provoca que las estimaciones de los coeficientes sean inestables y muy sensibles a pequeños cambios en los datos de entrenamiento.
+\end{itemize}
+
+
+
+\section{Practical Question 2 - Classification}
+
+\subsection{Análisis Exploratorio de Datos (EDA) y Escalamiento}
+
+\begin{itemize}
+    \item Balance de Clases: Se observa un ligero desbalance en la variable objetivo, con un 62.7\% de diagnósticos benignos y un 37.3\% de diagnósticos malignos. Este desbalance es manejable, pero justifica prestar especial atención a métricas más allá de la simple precisión global (Accuracy).
+\end{itemize}
+
+
+\begin{itemize}
+    \item Distribuciones y Correlaciones: El diagrama de caja (boxplot) indica que características como el "mean radius" tienen distribuciones claramente separables entre clases, siendo los tumores malignos significativamente más grandes. El mapa de calor revela una fuerte multicolinealidad entre varios predictores anatómicos (como radio, área y perímetro), lo que es esperado.
+\end{itemize}
+
+\begin{itemize}
+    \item Necesidad de Escalamiento: El escalamiento de características (mediante StandardScaler) es necesario para modelos paramétricos basados en distancias como K-Nearest Neighbors (KNN). Para la Regresión Logística, el escalamiento también es altamente recomendable para garantizar la convergencia del algoritmo de optimización y poder comparar la magnitud de los coeficientes .
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{EDA_2.png}
+    \caption{Varios gráficos de EDA}
+    \label{figura1}
+\end{figure}
+
+\subsection{Estrategia de Validación y Modelado}
+
+Validación: Se definió una estrategia separando el conjunto de datos original en entrenamiento (80\%) y un set de prueba final (20\%) aislado de la optimización. Dentro del set de entrenamiento, se utilizará Validación Cruzada (K-Fold) mediante GridSearchCV específicamente para afinar el hiperparámetro $K$ del modelo KNN.
+
+Modelos Ajustados:
+    \begin{itemize}
+        \item Regresión Logística.
+    \end{itemize}
+    \begin{itemize}
+        \item K-Nearest Neighbors (KNN) optimizado por validación cruzada.
+    \end{itemize}
+    \begin{itemize}
+        \item Análisis Discriminante Lineal (LDA).
+    \end{itemize}
+
+\subsection{Comparación de Modelos y Elección de Métricas}
+
+\begin{itemize}
+    \item La métrica más importante: En este contexto de detección de cáncer, la métrica que más importa es el Recall (Sensibilidad). El Recall mide la proporción de casos positivos (malignos) reales que el modelo logró identificar correctamente. En medicina preventiva, el costo de un Falso Negativo (decirle a un paciente enfermo que está sano) es catastrófico, mientras que un Falso Positivo (falsa alarma) es preferible y manejable mediante pruebas adicionales.
+\end{itemize}
+\begin{itemize}
+    \item Desempeño: La Regresión Logística es la dominante en la métrica clave, presentando el Recall más alto (0.929), junto con un excelente F1-Score (0.951) y ROC-AUC (0.996). 
+    LDA obtiene una precisión perfecta (Precision = 1.000), pero su Recall es menor (0.905), lo que significa que pasa por alto más casos malignos. KNN presentó el rendimiento más bajo en Recall (0.857).
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.8]{Comparacion_Modelos.png}
+    \caption{Comparación de Modelos}
+    \label{figura1}
+\end{figure}
+
+\subsection{Interpretación de la Regresión Logística}
+
+Dado que las variables fueron estandarizadas, los coeficientes representan el efecto de un aumento de una desviación estándar en el predictor sobre la probabilidad de que el tumor sea maligno .
+
+\begin{itemize}
+    \item Predictor "worst texture": Presenta un coeficiente de $1.43$, lo que equivale a un Odds Ratio (OR) de $e^{1.43} = 4.20$ . Esto significa que, manteniendo las demás variables constantes, un incremento de una desviación estándar en la peor textura anatómica observada multiplica las probabilidades (odds) de que el tumor sea maligno por 4.20.
+\end{itemize}
+
+\begin{itemize}
+    \item Predictor "radius error": Presenta un OR de $3.43$. Por cada desviación estándar adicional en el error del radio de las células, las probabilidades de malignidad se incrementan de forma multiplicativa por un factor de 3.43 .
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.8]{Interpretacion_predictores.png}
+    \caption{Interpretación de Predictores}
+    \label{figura1}
+\end{figure}
+
+
+\subsection{Recomendación y Umbral de Clasificación}
+
+\begin{itemize}
+    \item Modelo Recomendado: Se recomienda implementar el modelo de Regresión Logística. Además de tener el Recall más alto en el set de prueba (92.9\%) y un AUC casi perfecto, sus resultados (coeficientes y log-odds) son altamente interpretables, un requerimiento clave para un comité de revisión de datos médicos.
+\end{itemize}
+
+\begin{itemize}
+    \item Cambio de Umbral (Threshold): Por defecto, la regresión logística asigna la clase positiva si la probabilidad predicha es $p(X) \ge 0.5$ . Para este escenario clínico, SÍ se recomienda reducir el umbral de clasificación (por ejemplo, a 0.2 o 0.3). Al bajar el umbral de decisión, el modelo se vuelve más sensible, clasificando un caso como maligno ante la menor sospecha anatómica. Esto disminuirá la precisión (aumentando los Falsos Positivos) pero, de vital importancia, maximizará el Recall, minimizando el riesgo de dejar pasar desapercibido un tumor maligno (Falsos Negativos).
+\end{itemize}
+
+
+\textbf{Consecuencias de las violaciones:}
+
+\begin{itemize}
+    \item Predicción sesgada: La violación del supuesto de linealidad (subajuste) provoca sesgo sistemático en las predicciones en ciertos rangos de datos.
+\end{itemize}
+
+\begin{itemize}
+    \item Inferencia inválida: La presencia de heterocedasticidad y no normalidad significa que los errores estándar de los coeficientes ($\hat{\beta}$) están mal estimados. En consecuencia, los intervalos de confianza y las pruebas de hipótesis (p-valores) para determinar la significancia de las variables no son fiables.
+\end{itemize}
+
+\begin{itemize}
+    \item Inestabilidad: La alta multicolinealidad provoca que las estimaciones de los coeficientes sean inestables y muy sensibles a pequeños cambios en los datos de entrenamiento.
+\end{itemize}
+
+\begin{thebibliography}{9}
+
+\bibitem{quinlan1993}
+R. Quinlan. Auto MPG. \textit{UCI Machine Learning Repository}, 1993. \url{https://doi.org/10.24432/C5859H}
+
+\bibitem{wolberg1995}
+W. Wolberg, W. N. Street, and O. Mangasarian. Breast Cancer Wisconsin (Diagnostic). \textit{UCI Machine Learning Repository}, 1995. \url{https://doi.org/10.24432/C5DW2B}
+
+\end{thebibliography}
+
+\section{Declaración de Uso de Inteligencia Artificial}
+
+Para la resolución de este examen y la generación del código base en Python, se utilizó el modelo de lenguaje Gemini. A continuación, se detallan los prompts principales utilizados para guiar el análisis:
+
+\begin{itemize}
+    \item Prompt utilizado para el Ejercicio 1 (Regresión Lineal):
+\end{itemize}
+
+"Necesito que me ayudes con el código en Python para cargar el dataset Auto MPG. Realiza un análisis exploratorio con gráficos informativos (mpg vs weight, mpg vs cylinders como categoría, y mpg vs origin). Aplica One-hot encoding para las variables categóricas, define una estrategia de validación (train/test) y escala las variables. Después, añade una constante para statsmodels y ajusta tres modelos: una Regresión Lineal Múltiple Estándar, un modelo con término polinomial para el peso, y un Modelo Regularizado (Lasso con Cross-Validation). Finalmente, compara el error de prueba (RMSE) y usa el Modelo 2 para el diagnóstico, obteniendo el Gráfico Q-Q (Normalidad), Residuos vs Valores Ajustados (Linealidad y Varianza Constante), el Test de Breusch-Pagan (Homocedasticidad) y el VIF (Multicolinealidad)."
+
+\begin{itemize}
+    \item Prompt utilizado para el Ejercicio 2 (Clasificación):
+\end{itemize}
+
+"Necesito que me ayudes con el código en Python para cargar el dataset de Breast Cancer de scikit-learn. Realiza el análisis exploratorio mostrando el balance de clases, un gráfico de distribución de características por clase y una matriz de correlación. Aplica escalamiento de variables y define una estrategia de validación separando un set de prueba y usando validación cruzada. Ajusta tres clasificadores: Regresión Logística, K-Nearest Neighbors (optimizando la K con GridSearchCV) y Análisis Discriminante Lineal (LDA). Finalmente, compara los modelos utilizando Accuracy, Precision, Recall, F1-Score y ROC-AUC, y extrae los coeficientes del modelo logístico calculando los Odds Ratios para facilitar su interpretación médica."
+
+\end{document}
